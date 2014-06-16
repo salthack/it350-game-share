@@ -1,10 +1,10 @@
 <?php
 session_start();
 require("connect.php");
-if (!$_SESSION['auth'] == 1) {
+if (!$_SESSION['e_auth'] == 1) {
     // check if authentication was performed
 
-    header( 'Location: login.php?message=2' );
+    header( 'Location: employee_login.php?message=2' );
 }
 if(empty($_GET['orderID'])){
     header( 'Location: index.php' );
@@ -20,7 +20,7 @@ if(empty($_GET['orderID'])){
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Game Share Order Stat</title>
+    <title>Employee Order Stat</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -41,13 +41,13 @@ if(empty($_GET['orderID'])){
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.php">GameShare</a>
+                <a class="navbar-brand" href="employee_management.php">Management</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="logout.php">Not <?php echo $_SESSION['name'] ?>? Logout</a>
+                    <li><a href="employee_logout.php">Not <?php echo $_SESSION['e_name'] ?>? Logout</a>
                     </li>
                     <li><a href="#services"></a>
                     </li>
@@ -65,31 +65,34 @@ if(empty($_GET['orderID'])){
         <div class="row">
 
             <div class="col-md-3">
-                <p class="lead">Your Orders</p>
+                <p class="lead">Your Information</p>
                 <div class="list-group">
 
 
                     <?php
+                    $empCon = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
 
-                    $orderCon = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
                     if (mysqli_connect_errno()) {
                         printf("Connect failed: %s\n", mysqli_connect_error());
                         exit();  
                     }
-                    $orderCusQ = mysqli_query($orderCon,"SELECT cusID FROM Customer where username = '".$_SESSION['name']."'");
-                    $orderCusArray = mysqli_fetch_array($orderCusQ);
-                    $orderCus = $orderCusArray['cusID'];
+                    $yourEmpId;
 
-                    $ordersQ = mysqli_query($orderCon,"SELECT orderID, title FROM Orders where cusID = '".$orderCus."'");
-
-                    while($orderRow = mysqli_fetch_array($ordersQ)) {
-                        echo '<a href="order_stat.php?orderID='.$orderRow['orderID'].'" class="list-group-item">'.$orderRow['orderID'].' : '.$orderRow['title'].'</a>';
+                    $empRes = mysqli_query($empCon,"SELECT * FROM Employee WHERE username = '".$_SESSION['e_name']."'");
+                    //Employee Info
+                    while($emprow = mysqli_fetch_array($empRes)) {
+                        echo '<span class="list-group-item">ID: '.$emprow['empID'].'</span>';
+                        echo '<span class="list-group-item">username: '.$emprow['username'].'</span>';
+                        echo '<span class="list-group-item">Full Name: '.$emprow['name'].'</span>';
+                        echo '<span class="list-group-item">DOB: '.$emprow['dateOfBirth'].'</span>';
+                        $yourEmpId = $emprow['empID'];
                     }
+                    //Calculated Age using SQL 
+                    $ageRes = mysqli_query($empCon, "SELECT YEAR(CURRENT_TIMESTAMP) - YEAR(dateOfBirth) - (RIGHT(CURRENT_TIMESTAMP, 5) < RIGHT(dateOfBirth, 5)) as age FROM Employee WHERE username ='".$_SESSION['e_name']."'");
 
-
-
-                    mysqli_close($orderCon);
-
+                    $printAge = mysqli_fetch_array($ageRes);
+                    echo '<span class="list-group-item">Age: '.$printAge['age'].'</span>';
+                    mysqli_close($empCon);
 
                     ?>
                 </div>
@@ -180,13 +183,41 @@ if(empty($_GET['orderID'])){
                         echo '</form>';
 
                     }
-
-
                     ?>
 
-                    
+                    <form class="form col-md-12 center-block" action="e_send_game.php" method="post">
+                        <div class="form-group">
+                        <?php
+                        $shipCon = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
+                        if (mysqli_connect_errno()) {
+                            printf("Connect failed: %s\n", mysqli_connect_error());
+                            exit();  
+                        }
+                        $shipQ = mysqli_query($shipCon,"SELECT * FROM Shipping_Company");
 
-                </div>
+                        while($shipRow = mysqli_fetch_array($shipQ)) {
+                            echo '<input type="radio" name="compID" value="'.$shipRow['compID'].'"> '.$shipRow['name'].' : '.$shipRow['cost_to_ship'].' : '.$shipRow['days_to_ship'].' Days<br>';
+                        }
+                        mysqli_close($shipCon);
+                        ?>
+
+                      </div>
+                      <div class="form-group">
+                        <?php
+                        echo '<input type="hidden" name="orderID" value="'.$orderRes['orderID'].'" >';
+                        echo '<input type="hidden" name="gameID" value="'.$orderRes['gameID'].'" >';
+                        echo '<input type="hidden" name="empID" value="'.$orderRes['empID'].'" >';
+                        ?>
+                      </div>
+                      <div class="form-group">
+                          <button type="submit" class="btn btn-primary btn-lg btn-block">Send Game</button>
+                          <span class="pull-right"><a href="employee_management.php">Cancel</a></span><span></span>
+                      </div>
+                  </form>
+
+
+
+              </div>
 
             </div>
 

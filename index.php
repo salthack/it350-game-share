@@ -136,7 +136,7 @@ if (!$_SESSION['auth'] == 1) {
                         exit();  
                     }
 
-                    $result = mysqli_query($con,"SELECT * FROM Game");
+                    $result = mysqli_query($con,"SELECT * FROM Game WHERE status = 'in'");
 
                     while($row = mysqli_fetch_array($result)) {
                         echo '<div class="col-sm-4 col-lg-4 col-md-4">';

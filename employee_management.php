@@ -44,7 +44,7 @@ if (!$_SESSION['e_auth'] == 1) {
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="logout.php">Not <?php echo $_SESSION['e_name'] ?>? Logout</a>
+                    <li><a href="employee_logout.php">Not <?php echo $_SESSION['e_name'] ?>? Logout</a>
                     </li>
                     <li><a href="#services"></a>
                     </li>
@@ -71,6 +71,7 @@ if (!$_SESSION['e_auth'] == 1) {
                         printf("Connect failed: %s\n", mysqli_connect_error());
                         exit();  
                     }
+                    $yourEmpId;
 
                     $empRes = mysqli_query($empCon,"SELECT * FROM Employee WHERE username = '".$_SESSION['e_name']."'");
                     //Employee Info
@@ -79,7 +80,7 @@ if (!$_SESSION['e_auth'] == 1) {
                         echo '<span class="list-group-item">username: '.$emprow['username'].'</span>';
                         echo '<span class="list-group-item">Full Name: '.$emprow['name'].'</span>';
                         echo '<span class="list-group-item">DOB: '.$emprow['dateOfBirth'].'</span>';
-
+                        $yourEmpId = $emprow['empID'];
                     }
                     //Calculated Age using SQL 
                     $ageRes = mysqli_query($empCon, "SELECT YEAR(CURRENT_TIMESTAMP) - YEAR(dateOfBirth) - (RIGHT(CURRENT_TIMESTAMP, 5) < RIGHT(dateOfBirth, 5)) as age FROM Employee WHERE username ='".$_SESSION['e_name']."'");
@@ -113,40 +114,65 @@ if (!$_SESSION['e_auth'] == 1) {
                           <th>Price</th>
                           <th>gameID</th>
                           <th>Status</th>
+                          <th>Customer ID</th>
                           <th>empID Assigned</th>
                       </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
 
-                  </tr>
-                  <tr>
-                      <td>1</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
+                  <?php
+                  $con = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
 
-                  </tr>
-                  <tr>
-                      <td>1</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
+                    if (mysqli_connect_errno()) {
+                        printf("Connect failed: %s\n", mysqli_connect_error());
+                        exit();  
+                    }
 
-                  </tr>
+                    $orderQ = mysqli_query($con,"SELECT * FROM Orders WHERE empID = '".$yourEmpId."' AND status = 'Ordered'");
+
+                    while($row = mysqli_fetch_array($orderQ)) {
+                        echo '<tr>';
+
+                        echo '<td><a href="e_order_stat.php?orderID='.$row['orderID'].'" >'.$row['orderID'].'</a></td>';
+                        echo '<td>'.$row['title'].'</td>';
+                        echo '<td>'.$row['price'].'</td>';
+                        echo '<td>'.$row['gameID'].'</td>';
+                        echo '<td>'.$row['status'].'</td>';
+                        echo '<td>'.$row['cusID'].'</td>';
+                        echo '<td>'.$row['empID'].'</td>';
+
+                        echo '</tr>';
+                    }
+
+                    mysqli_close($con);
+
+                  ?>
                   
               </tbody>
           </table> 
+
+          <h2>Returns</h2>
+          <table class="table table-striped table-hover ">
+              <thead>
+                <tr>
+                  <th>returnID</th>
+                  <th>gameID</th>
+                  <th>cusID</th>
+                  <th>Confirm?</th>
+              </tr>
+          </thead>
+          <tbody>
+            <?php
+
+
+            ?>
+
+          </tbody>
+      </table>
+
+
+
+
 
                     <?php
                     /*

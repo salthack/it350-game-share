@@ -24,10 +24,15 @@ if ((!empty($_POST["orderID"])) && (!empty($_POST["title"])) && (!empty($_POST["
   	$empID = mysqli_real_escape_string($con, $_POST['empID']);
 
   	$insertQ = "INSERT INTO Orders VALUES ('".$orderID."','".$title."', '".$price."','".$gameID."','".$status."','".$cusID."','".$empID."')";
-
     if (!mysqli_query($con,$insertQ)) {
       die('Error: ' . mysqli_error($con));
     }
+
+    $updateQ = "UPDATE Game SET status='ORDERED' WHERE gameID = '".$gameID."'";
+    if (!mysqli_query($con,$updateQ)) {
+      die('Error: ' . mysqli_error($con));
+    }
+
 
     mysqli_close($con);
 
