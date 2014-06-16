@@ -65,6 +65,7 @@ if (!$_SESSION['e_auth'] == 1) {
                 <p class="lead">Your Information</p>
                 <div class="list-group">
                     <?php
+
                     $empCon = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
 
                     if (mysqli_connect_errno()) {
@@ -120,14 +121,14 @@ if (!$_SESSION['e_auth'] == 1) {
                   </thead>
                   <tbody>
 
-                  <?php
-                  $con = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
+                      <?php
+                      $con = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
 
-                    if (mysqli_connect_errno()) {
+                      if (mysqli_connect_errno()) {
                         printf("Connect failed: %s\n", mysqli_connect_error());
                         exit();  
                     }
-
+                    //Show all orders assigned to this employee
                     $orderQ = mysqli_query($con,"SELECT * FROM Orders WHERE empID = '".$yourEmpId."' AND status = 'Ordered'");
 
                     while($row = mysqli_fetch_array($orderQ)) {
@@ -146,13 +147,13 @@ if (!$_SESSION['e_auth'] == 1) {
 
                     mysqli_close($con);
 
-                  ?>
-                  
-              </tbody>
-          </table> 
+                    ?>
 
-          <h2>Returns</h2>
-          <table class="table table-striped table-hover ">
+                </tbody>
+            </table> 
+
+            <h2>Returns</h2>
+            <table class="table table-striped table-hover ">
               <thead>
                 <tr>
                   <th>returnID</th>
@@ -163,18 +164,39 @@ if (!$_SESSION['e_auth'] == 1) {
           </thead>
           <tbody>
             <?php
+            //Show all returns assigned to all employees
+            $retCon = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
 
+            if (mysqli_connect_errno()) {
+                printf("Connect failed: %s\n", mysqli_connect_error());
+                exit();  
+            }
+
+            $returnQ = mysqli_query($retCon,"SELECT * FROM Returns");
+
+            while($retRow = mysqli_fetch_array($returnQ)) {
+                echo '<tr>';
+
+                echo '<td>'.$retRow['returnID'].'</td>';
+                echo '<td>'.$retRow['gameID'].'</td>';
+                echo '<td>'.$retRow['cusID'].'</td>';
+                echo '<td><a href="e_return_confirm.php?returnID='.$retRow['returnID'].'" ><button type="button" class="btn btn-primary">Confirm Return</button></a></td>';
+
+                echo '</tr>';
+            }
+
+            mysqli_close($retCon);
 
             ?>
 
-          </tbody>
-      </table>
+        </tbody>
+    </table>
 
 
 
 
 
-                    <?php
+    <?php
                     /*
                     //Connect to DB
                     $con = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);

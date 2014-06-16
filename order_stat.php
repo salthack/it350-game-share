@@ -70,7 +70,7 @@ if(empty($_GET['orderID'])){
 
 
                     <?php
-
+                    //Show your orders
                     $orderCon = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
                     if (mysqli_connect_errno()) {
                         printf("Connect failed: %s\n", mysqli_connect_error());
@@ -164,9 +164,9 @@ if(empty($_GET['orderID'])){
 
                     echo '</div>';
 
- 
-                    mysqli_close($con);
 
+                    mysqli_close($con);
+                    //If order has been sent, allow return
                     if($orderRes['status'] == 'Sent'){
                         echo '<form class="form col-md-12 center-block" action="send_return.php" method="post">';
                         echo '<div class="form-group">';

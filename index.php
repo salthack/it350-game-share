@@ -65,6 +65,7 @@ if (!$_SESSION['auth'] == 1) {
                 <p class="lead">Your Orders</p>
                 <div class="list-group">
                     <?php
+                    //Shows Current Orders
 
                     $orderCon = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
                     if (mysqli_connect_errno()) {
@@ -85,6 +86,42 @@ if (!$_SESSION['auth'] == 1) {
 
                     mysqli_close($orderCon);
 
+
+                    ?>
+                </div>
+
+
+                <p class="lead">Your Information</p>
+                <div class="list-group">
+                    <?php
+                    //Displays Customer info
+                    $cusCon = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
+
+                    if (mysqli_connect_errno()) {
+                        printf("Connect failed: %s\n", mysqli_connect_error());
+                        exit();  
+                    }
+                    $yourCusId;
+
+                    $cusRes = mysqli_query($cusCon,"SELECT * FROM Customer WHERE username = '".$_SESSION['name']."'");
+                    while($cusrow = mysqli_fetch_array($cusRes)) {
+                        echo '<span class="list-group-item">ID: '.$cusrow['cusID'].'</span>';
+                        echo '<span class="list-group-item">username: '.$cusrow['username'].'</span>';
+                        echo '<span class="list-group-item">Full Name: '.$cusrow['name'].'</span>';
+                        echo '<span class="list-group-item">Address: '.$cusrow['address'].'</span>';
+                        echo '<span class="list-group-item">City: '.$cusrow['city'].'</span>';
+                        echo '<span class="list-group-item">State: '.$cusrow['state'].'</span>';
+                        echo '<span class="list-group-item">Zip: '.$cusrow['zip'].'</span>';
+
+
+                        $yourCusId = $cusrow['cusID'];
+                    }
+                    //Get Customer phones
+                    $cusPhone = mysqli_query($cusCon,"SELECT * FROM Customer_Phone WHERE cusID = '".$yourCusId."'");
+                    $cusPhoneRes = mysqli_fetch_array($cusPhone);
+                    echo '<span class="list-group-item">Phone: '.$cusPhoneRes['phone'].'</span>';
+
+                    mysqli_close($cusCon);
 
                     ?>
                 </div>
@@ -135,7 +172,7 @@ if (!$_SESSION['auth'] == 1) {
                         printf("Connect failed: %s\n", mysqli_connect_error());
                         exit();  
                     }
-
+                    //Get games that are in
                     $result = mysqli_query($con,"SELECT * FROM Game WHERE status = 'in'");
 
                     while($row = mysqli_fetch_array($result)) {

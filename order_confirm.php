@@ -134,6 +134,7 @@ if(empty($_GET['id'])){
 
                     $gameArray = mysqli_fetch_array($result);
                     $platformArray = mysqli_fetch_array($platformRes);
+                    //Make order UID
                     $orderUID = uniqid('orderID_', false);
 
 
@@ -185,53 +186,53 @@ if(empty($_GET['id'])){
 
                     echo '</div>';
 
- 
+
                     mysqli_close($con);
 
                     ?>
-
+                    
                     <form class="form col-md-12 center-block" action="place_order.php" method="post">
-                    <div class="form-group">
-                        <input type="hidden" name="orderID" value=<?php echo '"'.$orderUID.'"'?> >
-                        <input type="hidden" name="title" value=<?php echo '"'.$gameArray['title'].'"'?> >
-                        <input type="hidden" name="price" value=<?php echo '"'.$gameArray['price'].'"'?> >
-                        <input type="hidden" name="gameID" value=<?php echo '"'.$gameArray['gameID'].'"'?> >
-                        <input type="hidden" name="status" value="Ordered" >
-                        <input type="hidden" name="cusID" value=<?php echo '"'.$cusArray['cusID'].'"'?> >
-                        <input type="hidden" name="empID" value=<?php echo '"'.$assignedEmp.'"'?> >
-                    </div>
-                      <div class="form-group">
+                        <div class="form-group">
+                            <input type="hidden" name="orderID" value=<?php echo '"'.$orderUID.'"'?> >
+                            <input type="hidden" name="title" value=<?php echo '"'.$gameArray['title'].'"'?> >
+                            <input type="hidden" name="price" value=<?php echo '"'.$gameArray['price'].'"'?> >
+                            <input type="hidden" name="gameID" value=<?php echo '"'.$gameArray['gameID'].'"'?> >
+                            <input type="hidden" name="status" value="Ordered" >
+                            <input type="hidden" name="cusID" value=<?php echo '"'.$cusArray['cusID'].'"'?> >
+                            <input type="hidden" name="empID" value=<?php echo '"'.$assignedEmp.'"'?> >
+                        </div>
+                        <div class="form-group">
                           <button type="submit" class="btn btn-primary btn-lg btn-block">Submit Order</button>
                           <span class="pull-right"><a href="index.php">Cancel</a></span><span></span>
                       </div>
                   </form>
 
-                </div>
+              </div>
+
+          </div>
+
+      </div>
+
+  </div>
+  <!-- /.container -->
+
+  <div class="container">
+    <hr>
+
+    <footer>
+        <div class="row">
+            <div class="col-lg-12">
 
             </div>
-
         </div>
+    </footer>
 
-    </div>
-    <!-- /.container -->
+</div>
+<!-- /.container -->
 
-    <div class="container">
-        <hr>
-
-        <footer>
-            <div class="row">
-                <div class="col-lg-12">
-
-                </div>
-            </div>
-        </footer>
-
-    </div>
-    <!-- /.container -->
-
-    <!-- JavaScript -->
-    <script src="js/jquery-1.11.1.min.js"></script>
-    <script src="js/bootstrap.js"></script>
+<!-- JavaScript -->
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/bootstrap.js"></script>
 
 </body>
 

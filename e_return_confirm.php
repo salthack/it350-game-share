@@ -6,8 +6,8 @@ if (!$_SESSION['e_auth'] == 1) {
 
     header( 'Location: employee_login.php?message=2' );
 }
-if(empty($_GET['orderID'])){
-    header( 'Location: index.php' );
+if(empty($_GET['returnID'])){
+    header( 'Location: employee_management.php' );
 }
 ?>
 
@@ -20,7 +20,7 @@ if(empty($_GET['orderID'])){
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Employee Order Stat</title>
+    <title>Employee Confirm Return</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -99,7 +99,7 @@ if(empty($_GET['orderID'])){
             </div>
 
             <div class="col-md-9">
-                <h1>Order Status</h1>
+                <h1>Confirm Return</h1>
 
 
                 <div class="row">
@@ -115,10 +115,10 @@ if(empty($_GET['orderID'])){
                         printf("Connect failed: %s\n", mysqli_connect_error());
                         exit();  
                     }
-                    $getid = mysqli_real_escape_string($con, $_GET['orderID']);
+                    $returnID = mysqli_real_escape_string($con, $_GET['returnID']);
 
-                    $orderQ = mysqli_query($con,"SELECT * FROM Orders where orderID = '".$getid."'");
-                    $orderRes = mysqli_fetch_array($orderQ);
+                    $returnQ = mysqli_query($con,"SELECT * FROM Returns where returnID = '".$returnID."'");
+                    $returnRes = mysqli_fetch_array($returnQ);
 
 
 
@@ -126,92 +126,48 @@ if(empty($_GET['orderID'])){
                     echo '<div class="list-group">';
 
                     echo '<div class="list-group-item">';
-                    echo '<h4 class="list-group-item-heading">orderID</h4>';
-                    echo '<p class="list-group-item-text">'.$orderRes['orderID'].'</p>';
+                    echo '<h4 class="list-group-item-heading">returnID</h4>';
+                    echo '<p class="list-group-item-text">'.$returnRes['returnID'].'</p>';
                     echo '</div>';
 
                     //
-                    echo '<div class="list-group-item">';
-                    echo '<h4 class="list-group-item-heading">Title</h4>';
-                    echo '<p class="list-group-item-text">'.$orderRes['title'].'</p>';
-                    echo '</div>';
-
-                    //
-                    echo '<div class="list-group-item">';
-                    echo '<h4 class="list-group-item-heading">Price</h4>';
-                    echo '<p class="list-group-item-text">'.$orderRes['price'].'</p>';
-                    echo '</div>';
-
                     echo '<div class="list-group-item">';
                     echo '<h4 class="list-group-item-heading">gameID</h4>';
-                    echo '<p class="list-group-item-text">'.$orderRes['gameID'].'</p>';
-                    echo '</div>'; 
-
-                    echo '<div class="list-group-item">';
-                    echo '<h4 class="list-group-item-heading">Order Status</h4>';
-                    echo '<p class="list-group-item-text">'.$orderRes['status'].'</p>';
-                    echo '</div>';            
-
-                    echo '<div class="list-group-item">';
-                    echo '<h4 class="list-group-item-heading">Your cusID</h4>';
-                    echo '<p class="list-group-item-text">'.$orderRes['cusID'].'</p>';
+                    echo '<p class="list-group-item-text">'.$returnRes['gameID'].'</p>';
                     echo '</div>';
 
+                    //
                     echo '<div class="list-group-item">';
-                    echo '<h4 class="list-group-item-heading">Assigned Employee</h4>';
-                    echo '<p class="list-group-item-text">'.$orderRes['empID'].'</p>';
+                    echo '<h4 class="list-group-item-heading">cusID</h4>';
+                    echo '<p class="list-group-item-text">'.$returnRes['cusID'].'</p>';
                     echo '</div>';
-
-
-
 
                     echo '</div>';
 
-
+                    
                     mysqli_close($con);
 
-                    if($orderRes['status'] == 'Sent'){
-                        echo '<form class="form col-md-12 center-block" action="send_return.php" method="post">';
-                        echo '<div class="form-group">';
-                        echo '<input type="hidden" name="orderID" value="'.$orderRes['orderID'].'" >';
-                        echo '<input type="hidden" name="gameID" value="'.$orderRes['gameID'].'" >';
-                        echo '<input type="hidden" name="cusID" value="'.$orderRes['cusID'].'" >';
-                        echo '</div>';
-                        echo '<div class="form-group">';
-                        echo '<button type="submit" class="btn btn-primary btn-lg btn-block">Return Order</button>';
-                        echo '</div>';
-                        echo '</form>';
-
-                    }
                     ?>
 
-                    <form class="form col-md-12 center-block" action="e_send_game.php" method="post">
+                    <form class="form col-md-12 center-block" action="e_remove_return.php" method="post">
                         <div class="form-group">
-                            <?php
-                            $shipCon = mysqli_connect($db_location,$db_user,$db_password,$db_dbname);
-                            if (mysqli_connect_errno()) {
-                                printf("Connect failed: %s\n", mysqli_connect_error());
-                                exit();  
-                            }
-                            $shipQ = mysqli_query($shipCon,"SELECT * FROM Shipping_Company");
-                            // Get different shipping companies
-                            while($shipRow = mysqli_fetch_array($shipQ)) {
-                                echo '<input type="radio" name="compID" value="'.$shipRow['compID'].'"> '.$shipRow['name'].' : '.$shipRow['cost_to_ship'].' : '.$shipRow['days_to_ship'].' Days<br>';
-                            }
-                            mysqli_close($shipCon);
-                            ?>
+                            <h3>Game Condition</h3>
+                            <input type="radio" name="status" value="excellent" checked> excellent<br>
+                            <input type="radio" name="status" value="good" > good<br>
+                            <input type="radio" name="status" value="fair" > fair<br>
+                            <input type="radio" name="status" value="poor" > poor<br>
+                            <input type="radio" name="status" value="disposed" > dispose game<br>
 
                         </div>
                         <div class="form-group">
                             <?php
-                            //Parameters needed to send game
-                            echo '<input type="hidden" name="orderID" value="'.$orderRes['orderID'].'" >';
-                            echo '<input type="hidden" name="gameID" value="'.$orderRes['gameID'].'" >';
-                            echo '<input type="hidden" name="empID" value="'.$orderRes['empID'].'" >';
+                            echo '<input type="hidden" name="returnID" value="'.$returnRes['returnID'].'" >';
+                            echo '<input type="hidden" name="gameID" value="'.$returnRes['gameID'].'" >';
+                            echo '<input type="hidden" name="cusID" value="'.$returnRes['cusID'].'" >';
                             ?>
                         </div>
                         <div class="form-group">
-                          <button type="submit" class="btn btn-primary btn-lg btn-block">Send Game</button>
+                          <button type="submit" class="btn btn-primary btn-lg btn-block">Confirm Return</button>
                           <span class="pull-right"><a href="employee_management.php">Cancel</a></span><span></span>
                       </div>
                   </form>
